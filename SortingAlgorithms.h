@@ -20,7 +20,5 @@ class SortingAlgorithms {
 
 		int Partition(std::vector<int>& Vector, int Start, int End);
 
-		void printa(std::vector<int> Vector);
-
 		void RunAlgorithms();
 };
