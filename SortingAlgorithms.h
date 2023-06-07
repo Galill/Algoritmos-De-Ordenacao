@@ -16,7 +16,11 @@ class SortingAlgorithms {
 
 		void Merge(std::vector<int>& Vector, std::vector<int>& Vector_aux, int Start, int middle, int End);
 
-		void QuickSort();
+		void QuickSort(std::vector<int>& Vector, int Start, int End);
+
+		int Partition(std::vector<int>& Vector, int Start, int End);
+
+		void printa(std::vector<int> Vector);
 
 		void RunAlgorithms();
 };
