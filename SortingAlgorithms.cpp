@@ -10,6 +10,7 @@ using namespace std::chrono;
 std::vector<int> SortingAlgorithms::Vector;
 
 void SortingAlgorithms::SelectionSort(std::vector<int> Vector) {
+	auto start = steady_clock::now();
 	int aux = 0, min = 0; 
 	for (int i = 0; i < (Vector.size() - 1); i++) {
 		min = i;
@@ -22,9 +23,13 @@ void SortingAlgorithms::SelectionSort(std::vector<int> Vector) {
 		Vector[min] = Vector[i];
 		Vector[i] = aux;
 	}
+	auto end = steady_clock::now();
+	auto elapsed = end - start;
+	cout << "Selection Sort:\n " << duration<double>(elapsed).count() << " segundos!" << endl;
 }
 
 void SortingAlgorithms::BubbleSort(std::vector<int> Vector) {
+	auto start = steady_clock::now();
 	int aux = 0;
 	for (int i = 0; i < (Vector.size() - 1); i++) {
 		for (int j = (i + 1); j < Vector.size(); j++) {
@@ -35,9 +40,13 @@ void SortingAlgorithms::BubbleSort(std::vector<int> Vector) {
 			}
 		}
 	}
+	auto end = steady_clock::now();
+	auto elapsed = end - start;
+	cout << "Bubble Sort:\n " << duration<double>(elapsed).count() << " segundos!" << endl;
 }
 
 void SortingAlgorithms::InsertionSort(std::vector<int> Vector) {
+	auto start = steady_clock::now();
 	int aux = 0, atual = 0;
 	for (int i = 0; i < Vector.size(); i++) {
 		atual = Vector[i];
@@ -48,6 +57,9 @@ void SortingAlgorithms::InsertionSort(std::vector<int> Vector) {
 		}
 		Vector[aux] = atual;
 	}
+	auto end = steady_clock::now();
+	auto elapsed = end - start;
+	cout << "Insertion Sort:\n " << duration<double>(elapsed).count() << " segundos!" << endl;
 }
 
 void SortingAlgorithms::MergeSort(std::vector<int>& Vector, std::vector<int>& Vector_aux, int Start, int End) {
@@ -88,61 +100,63 @@ void SortingAlgorithms::Merge(std::vector<int>& Vector, std::vector<int>& Vector
 	}
 }
 
-void SortingAlgorithms::QuickSort() {
-
+void SortingAlgorithms::QuickSort(std::vector<int>& Vector, int Start, int End) {
+	int pivo;
+	if (Start < End) {
+		pivo = Partition(Vector, Start, End);
+		QuickSort(Vector, Start, pivo - 1);
+		QuickSort(Vector, pivo + 1, End);
+	}
 }
 
+int SortingAlgorithms::Partition(std::vector<int>& Vector, int Start, int End){
+	int pivo = Vector[End];
+	int x = Start - 1;
+
+	for (int j = Start; j <= End - 1; j++) {
+		if (Vector[j] <= pivo) {
+			x++;
+			std::swap(Vector[x], Vector[j]);
+		}
+	}
+	std::swap(Vector[x + 1], Vector[End]);
+	return x + 1;
+} 
+
 void SortingAlgorithms::RunAlgorithms() {
-	SortingAlgorithms sort;
 	std::vector<int> data1 = Vector;
 	std::vector<int> data2 = Vector;
+	std::vector<int> data3 = Vector;
 	std::vector<int> Vector_aux(data2.size());
 
-	// CÓDIGO CONCORRENTE:
-	/*auto start1 = steady_clock::now();
-	std::thread ThreadSelectionSort(&SortingAlgorithms::SelectionSort, this, data1);
-	auto end1 = steady_clock::now();
-	auto elapsed1 = end1 - start1;
-	cout << "Selection Sort:\n " << duration<double>(elapsed1).count() << " segundos!" << endl;
-
-	auto start2 = steady_clock::now();
+	// CÓDIGO CONCORRENTE: (Não calcula o tempo do quick sort nem do merg sort)
+	/*std::thread ThreadSelectionSort(&SortingAlgorithms::SelectionSort, this, data1);
 	std::thread ThreadBubbleSort(&SortingAlgorithms::BubbleSort, this, data1);
-	auto end2 = steady_clock::now();
-	auto elapsed2 = end2 - start2;
-	cout << "Bubble Sort:\n " << duration<double>(elapsed2).count() << " segundos!" << endl;
-
-	auto start3 = steady_clock::now();
 	std::thread ThreadInsertionSort(&SortingAlgorithms::InsertionSort, this, data1);
-	auto end3 = steady_clock::now();
-	auto elapsed3 = end3 - start3;
-	cout << "Insertion Sort:\n " << duration<double>(elapsed3).count() << " segundos!" << endl;
+	std::thread ThreadMergeSort(&SortingAlgorithms::MergeSort, this, std::ref(data2), std::ref(Vector_aux), 0, data2.size() - 1);
+	std::thread ThreadQuickSort(&SortingAlgorithms::QuickSort, this, std::ref(data3), 0, data3.size() - 1);
 
 	ThreadSelectionSort.join();
 	ThreadBubbleSort.join();
-	ThreadInsertionSort.join();*/
+	ThreadInsertionSort.join();
+	ThreadMergeSort.join();
+	ThreadQuickSort.join();*/
 
 	// CÓDIGO PARALELO:
-	auto start1 = steady_clock::now();
+	SortingAlgorithms sort;
 	sort.SelectionSort(Vector);
+	sort.BubbleSort(Vector);
+	sort.InsertionSort(Vector);
+	
+	auto start1 = steady_clock::now();
+	sort.MergeSort(data2, Vector_aux, 0, data2.size() - 1);
 	auto end1 = steady_clock::now();
 	auto elapsed1 = end1 - start1;
-	cout << "Selection Sort:\n " << duration<double>(elapsed1).count() << " segundos!" << endl;
+	cout << "Merg Sort:\n " << duration<double>(elapsed1).count() << " segundos!" << endl;
 
 	auto start2 = steady_clock::now();
-	sort.BubbleSort(Vector);
+	sort.QuickSort(data3, 0, data3.size() - 1);
 	auto end2 = steady_clock::now();
 	auto elapsed2 = end2 - start2;
-	cout << "Bubble Sort:\n " << duration<double>(elapsed2).count() << " segundos!" << endl;
-
-	auto start3 = steady_clock::now();
-	sort.InsertionSort(Vector);
-	auto end3 = steady_clock::now();
-	auto elapsed3 = end3 - start3;
-	cout << "Insertion Sort:\n " << duration<double>(elapsed3).count() << " segundos!" << endl;
-
-	auto start4 = steady_clock::now();
-	sort.MergeSort(data2, Vector_aux, 0, data2.size() - 1);
-	auto end4 = steady_clock::now();
-	auto elapsed4 = end4 - start4;
-	cout << "Merge Sort:\n " << duration<double>(elapsed4).count() << " segundos!" << endl;
+	cout << "Quick Sort:\n " << duration<double>(elapsed2).count() << " segundos!" << endl;
 }
