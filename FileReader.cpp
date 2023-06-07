@@ -8,7 +8,6 @@
 using namespace std;
 
 void FileReader::readFile() {
-		SortingAlgorithms sortingAlgorithms;
 		ifstream file;
 		string file_name, line;
 		std::vector<int> test_case;
@@ -30,15 +29,5 @@ void FileReader::readFile() {
 
 		file.close();
 
-		/* 
-		for (int j = 0; j < test_case.size(); ++j) {
-			std::cout << test_case[j] << "\n";
-		}
-		*/
-
-		vec_size = test_case.size();
-
-		//sortingAlgorithms.BubbleSort(test_case);
-		//sortingAlgorithms.SelectionSort(test_case);
-		sortingAlgorithms.InsertionSort(test_case);
+		SortingAlgorithms::Vector = test_case;
 	}
